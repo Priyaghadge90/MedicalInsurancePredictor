@@ -14,7 +14,7 @@ class MedicalInsurance():
         """This method is used to load linear regression model
 
         """
-        with open("project_config.MODEL_FILE_PATH","rb") as f:
+        with open(project_config.MODEL_FILE_PATH,"rb") as f:
             self.lin_reg_model=pickle.load(f)
 
         self.feature_names=self.lin_reg_model.feature_names_in_
@@ -28,7 +28,7 @@ class MedicalInsurance():
             one hot encoding data
         """
 
-        with open ("project_config.label_encoded_data_path","r") as f:
+        with open (project_config.Label_encoded_data_path,"r") as f:
             self.column_encoded_data=json.load(f)
             return self.column_encoded_data
         
@@ -60,7 +60,7 @@ class MedicalInsurance():
 
         print(self.df_test)
 
-    def predict_cahrges(self,data):
+    def predict_charges(self,data):
         self.data=data
         self.get_data_from_user()
         prediction=self.lin_reg_model.predict(self.df_test)[0]

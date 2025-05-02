@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Medical Insurance Prediction</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('/static/image/OIP.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #000;
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 6px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 8px 15px;
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h3 style="text-align:center;">Insurance Prediction</h3>
+
+    <form id="insurance-form">
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender"></select>
+
+        <label for="smoker">Smoker:</label>
+        <select id="smoker" name="smoker"></select>
+
+        <label for="region">Region:</label>
+        <select id="region" name="region"></select>
+
+        <label for="children">Children:</label>
+        <input type="number" id="children" name="children" min="0" max="6" required>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" min="0" required>
+
+        <label for="bmi">BMI:</label>
+        <input type="number" id="bmi" name="bmi" step="0.1" required>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    async function populateSelect(endpoint, elementId) {
+        try {
+            const response = await fetch(endpoint);
+            const data = await response.json();
+            const select = document.getElementById(elementId);
+            select.innerHTML = ""; // clear existing options
+            data.forEach(item => {
+                const option = document.createElement("option");
+                option.value = item;
+                option.textContent = item;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Failed to populate dropdown:", elementId, error);
+        }
+    }
+
+    populateSelect("/gender_option", "gender");
+    populateSelect("/smoker_option", "smoker");
+    populateSelect("/region_option", "region");
+
+    document.getElementById("insurance-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        try {
+            const response = await fetch("/prediction", {
+                method: "POST",
+                body: formData
+            });
+
+            const result = await response.json();
+            document.getElementById("result").textContent = result.result;
+        } catch (error) {
+            console.error("Prediction error:", error);
+            document.getElementById("result").textContent = "Prediction failed.";
+        }
+    });
+</script>
+
+</body>
+</html>
